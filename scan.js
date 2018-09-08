@@ -68,7 +68,6 @@ async.eachLimit(directories, 2, (mediaDir, directoryCallback) => {
       if ( new Levenshtein(fileName, pathParts[ pathParts.length - 1 ]).distance < 5 ) {
         pathParts.pop();
       } // end if
-
       // set tags all lowercase
       f.tags = _.uniq(pathParts).map(t => t.toLowerCase()).filter(t => t.length > 1);
     } catch(e) {
@@ -115,8 +114,9 @@ function readDirectory(directory) {
             .then(f => (files = files.concat(f), mediaCallback()))
             .catch(err => (console.log('read dir err', err), mediaCallback()));
         } else {
-          const fileType = getFileType(file.split('.').pop().toLowerCase());
-          if ( !!fileType ) {
+          const fileType = getFileType(file.split('.').pop().toLowerCase()),
+	    filename = file.split('/').pop();
+          if ( !!fileType && filename.indexOf('.') !== 0 ) {
             if ( !!_.find(files, [ 'path', file ]) ) {
               console.log(file, 'already in array');
             } // end if

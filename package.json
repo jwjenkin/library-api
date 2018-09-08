@@ -3,6 +3,7 @@
     "async": "^2.6.0",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
     "express": "^4.16.2",
     "fs": "^0.0.1-security",
     "hash": "^0.2.0",

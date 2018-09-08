@@ -37,7 +37,12 @@ router.get('/:id/stream', (req, res) => {
         return res.status(404).json({ error: 'File not found.' });
       } // end if
       console.log(file.path);
-      res.download(file.path);
+      res.download(file.path, e => {
+	if ( e ) {
+	  console.log(e);
+	  return res.sendStatus(400);
+	} // end if
+      });
     }).catch(err => (console.log(err), res.sendStatus(400)));
 });
 
