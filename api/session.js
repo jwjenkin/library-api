@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
           console.log('password incorrect');
           return res.sendStatus(401);
         } // end if
-        
+       	const exp = moment().add(1, req.body.username === 'testuser' ? 'hour' : 'week').unix(); 
         let payload = {
           _id: user._id,
           username: user.username,

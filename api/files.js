@@ -38,12 +38,14 @@ router.get('/:id/stream', (req, res) => {
       } // end if
       console.log(file.path);
       res.download(file.path, e => {
-	if ( e ) {
-	  console.log(e);
-	  return res.sendStatus(400);
+	if ( !e ) {
+	  console.log('well, something odd is happening');
+	} else if ( e.toString().indexOf('aborted') === -1 ) {
+          console.log(e);
+	  //return res.sendStatus(400);
 	} // end if
       });
-    }).catch(err => (console.log(err), res.sendStatus(400)));
+    }).catch(err => console.log(err));
 });
 
 module.exports = router;

@@ -5,8 +5,8 @@ const app = require('express')(),
   cors = require('cors'),
   port = 8888;
 
-app.use(bodyParser.json());
 app.use(cors());
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => res.send(`
 Jenkins Library

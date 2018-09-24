@@ -42,6 +42,10 @@ router.use((req, res, next) => {
     } // end try-catch
   } // end if
 
+  if ( req.auth.username === 'testuser' ) {
+    // return res.sendStatus(401);
+  } // end if
+
   console.log(`${req.auth.username} is accessing ${req.originalUrl}`);
   next();
 });
