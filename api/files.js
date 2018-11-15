@@ -39,7 +39,7 @@ router.get('/:id/stream', (req, res) => {
       console.log(file.path);
       res.download(file.path, e => {
 	if ( !e ) {
-	  console.log('well, something odd is happening');
+	  console.log('well, something odd is happening: ', e.toString());
 	} else if ( e.toString().indexOf('aborted') === -1 ) {
           console.log(e);
 	  //return res.sendStatus(400);
