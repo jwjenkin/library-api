@@ -1,0 +1,6 @@
+#!/bin/bash
+if [[ $(ps aux | grep "/var/www/library/server" | wc -l) = 1 ]]; then
+  # start server
+  tmux new-session -d -s library /usr/bin/node /var/www/library/server
+fi;
+
