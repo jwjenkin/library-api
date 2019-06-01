@@ -1,4 +1,4 @@
-#!/usr/local/bin/node
+#!/usr/bin/node
 'use strict';
 
 const _ = require('lodash'),

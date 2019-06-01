@@ -8,6 +8,12 @@ const app = require('express')(),
 app.use(cors());
 app.use(bodyParser.json());
 
+app.all('/*', (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
+
 app.get('/', (req, res) => res.send(`
 Jenkins Library
 Login:

@@ -21,7 +21,7 @@ router.post('/', (req, res) => {
           return res.sendStatus(401);
         } // end if
        	const exp = moment().add(1, req.body.username === 'testuser' ? 'hour' : 'week').unix(); 
-        let payload = {
+        const payload = {
           _id: user._id,
           username: user.username,
           exp: moment().add(1, 'week').unix()

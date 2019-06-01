@@ -1,4 +1,4 @@
-#!/usr/local/bin/node
+#!/usr/bin/node
 'use strict';
 
 const _ = require('lodash'),
@@ -42,9 +42,9 @@ async.eachLimit(directories, 2, (mediaDir, directoryCallback) => {
     .catch(err => directoryCallback());
 }, () => {
   timeElapsed(startTime, 'files aggregated in');
-  console.log('Starting db updates');
+  console.log('Starting db updates: ', fileList.length + ' files');
   let totalFiles = fileList.length;
-  // progress = new ProgressService(totalFiles);
+  const progress = new ProgressService(totalFiles);
 
   async.eachLimit(fileList, 10, (f, fileCallback) => {
     try {
@@ -78,12 +78,12 @@ async.eachLimit(directories, 2, (mediaDir, directoryCallback) => {
     File.findOneAndUpdate({ name: f.name, ext: f.ext }, f)
       .then(media => {
         if ( !!media ) {
-          // progress.increment(f.name);
+          progress.increment('update');
           fileCallback();
         } else {
           new File(f).save()
             .then(() => {
-              // progress.increment(f.name);
+              progress.increment('create');
               fileCallback();
             })
             .catch(err => (console.log(err), fileCallback()));
@@ -91,7 +91,7 @@ async.eachLimit(directories, 2, (mediaDir, directoryCallback) => {
       })
       .catch(err => (console.log('err', f.name, err), process.exit()));
   }, () => {
-    // progress.finish();
+    progress.finish();
     console.log();
     timeElapsed(startTime, `${totalFiles} in`);
     process.exit();
