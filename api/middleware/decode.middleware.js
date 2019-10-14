@@ -26,6 +26,7 @@ router.use((req, res, next) => {
   if ( req.headers.keycard ) {
     try {
       req.keycard = jwt.decode(req.headers.keycard, secret);
+      // TODO: figure out fix for multipart
       // if ( req.headers.range ) {
       //   let section = req.headers.range.replace(/bytes=(\d+)\-/, '$1') / 32768;
       //   if (
