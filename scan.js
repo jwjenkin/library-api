@@ -33,17 +33,15 @@ async.eachLimit(directories, 2, (mediaDir, directoryCallback) => {
   console.log('loading files in', mediaDir);
   const currentDirectory = `/media/${mediaDir}`,
     sectionStartTime = Date.now();
-  readDirectory(currentDirectory)
-    .then(f => {
-      timeElapsed(sectionStartTime, `done with ${mediaDir} in`);
-      fileList = fileList.concat(f);
-      directoryCallback();
-    })
-    .catch(err => directoryCallback());
+  readDirectory(currentDirectory).then(f => {
+    timeElapsed(sectionStartTime, `done with ${mediaDir} in`);
+    fileList = fileList.concat(f);
+    directoryCallback();
+  }).catch(err => directoryCallback());
 }, () => {
   timeElapsed(startTime, 'files aggregated in');
-  console.log('Starting db updates: ', fileList.length + ' files');
-  let totalFiles = fileList.length;
+  const totalFiles = fileList.length;
+  console.log('Starting db updates: ', `${totalFiles} files`);
   const progress = new ProgressService(totalFiles);
 
   async.eachLimit(fileList, 10, (f, fileCallback) => {
@@ -73,23 +71,19 @@ async.eachLimit(directories, 2, (mediaDir, directoryCallback) => {
     } catch(e) {
       console.log('issue', e);
       process.exit();
-    }
+    } // end try-catch
 
-    File.findOneAndUpdate({ name: f.name, ext: f.ext }, f)
-      .then(media => {
-        if ( !!media ) {
-          progress.increment('update');
-          fileCallback();
-        } else {
-          new File(f).save()
-            .then(() => {
-              progress.increment('create');
-              fileCallback();
-            })
-            .catch(err => (console.log(err), fileCallback()));
-        } // end if
-      })
-      .catch(err => (console.log('err', f.name, err), process.exit()));
+    File.findOneAndUpdate({ name: f.name, ext: f.ext }, f).then(media => {
+      if ( !!media ) {
+        progress.increment('update');
+        return fileCallback();
+      } // end if
+
+      new File(f).save().then(() => {
+        progress.increment('create');
+        fileCallback();
+      }).catch(err => (console.log(err), fileCallback()));
+    }).catch(err => (console.log('err', f.name, err), process.exit()));
   }, () => {
     progress.finish();
     console.log();
@@ -99,7 +93,7 @@ async.eachLimit(directories, 2, (mediaDir, directoryCallback) => {
 });
 
 function readDirectory(directory) {
-  let files = [];
+  const files = [];
   return new Promise(resolve => {
     fs.readdir(directory, (err, mediaList) => {
       if ( err ) {
