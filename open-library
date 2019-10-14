@@ -1,6 +1,12 @@
 #!/bin/bash
 if [[ $(ps aux | grep "/var/www/library/server" | wc -l) = 1 ]]; then
+  source .env
   # start server
-  tmux new-session -d -s library /usr/bin/node /var/www/library/server
+  tmux new-session -d -s library \; \
+    set-option -g default-shell /bin/bash \; \
+    setenv -g LIBRARY_MONGO_USER $LIBRARY_MONGO_USER \; \
+    setenv -g LIBRARY_MONGO_PASS $LIBRARY_MONGO_PASS \; \
+    setenv -g LIBRARY_MONGO_URL $LIBRARY_MONGO_URL \; \
+    send-keys -t 0 '/usr/bin/node /var/www/library/server && exit' C-m
 fi;
 
