@@ -1,10 +1,11 @@
 'use strict';
 
 const mongoose = require('mongoose'),
-  user = 'jwjenkin',
-  pass = 'sir5idea4haul';
+  user = process.env.LIBRARY_MONGO_USER || 'username',
+  pass = process.env.LIBRARY_MONGO_PASS || 'password',
+  url = process.env.LIBRARY_MONGO_URL || 'localhost:27017';
 
-mongoose.connect(`mongodb://${user}:${pass}@jenkins-library-shard-00-00-6vumr.mongodb.net:27017,jenkins-library-shard-00-01-6vumr.mongodb.net:27017,jenkins-library-shard-00-02-6vumr.mongodb.net:27017/test?ssl=true&replicaSet=jenkins-library-shard-0&authSource=admin`, { useMongoClient: true });
+mongoose.connect(`mongodb://${user}:${pass}@${url}`, { useMongoClient: true });
 mongoose.Promise = global.Promise;
 
 module.exports = mongoose;
