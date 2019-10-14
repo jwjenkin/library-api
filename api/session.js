@@ -5,7 +5,7 @@ const router = require('express')(),
   jwt = require('jwt-simple'),
   moment = require('moment'),
   User = require('../models/User.model'),
-  secret = require('../config').secret;
+  secret = process.env.API_SECRET || require('../config').secret;
 
 router.post('/', (req, res) => {
   User.findOne({ username: req.body.username }, { username: 1, password: 1 })

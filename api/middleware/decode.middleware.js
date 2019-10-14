@@ -3,7 +3,7 @@
 const router = require('express')(),
   moment = require('moment'),
   jwt = require('jwt-simple'),
-  secret = require('../../config').secret;
+  secret = process.env.API_SECRET || require('../../config').secret;
 
 router.use((req, res, next) => {
   // auth access

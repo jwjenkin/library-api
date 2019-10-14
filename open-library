@@ -4,6 +4,7 @@ if [[ $(ps aux | grep "/var/www/library/server" | wc -l) = 1 ]]; then
   # start server
   tmux new-session -d -s library \; \
     set-option -g default-shell /bin/bash \; \
+    setenv -g API_SECRET $API_SECRET \; \
     setenv -g LIBRARY_MONGO_USER $LIBRARY_MONGO_USER \; \
     setenv -g LIBRARY_MONGO_PASS $LIBRARY_MONGO_PASS \; \
     setenv -g LIBRARY_MONGO_URL $LIBRARY_MONGO_URL \; \
