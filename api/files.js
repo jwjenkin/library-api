@@ -4,7 +4,7 @@ const router = require('express')(),
   jwt = require('jwt-simple'),
   moment = require('moment'),
   File = require('../models/File.model'),
-  secret = require('../config').secret;
+  secret = process.env.API_SECRET || require('../config').secret;
 
 moment().utcOffset(-5);
 
