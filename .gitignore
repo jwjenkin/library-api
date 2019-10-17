@@ -3,4 +3,4 @@ scan.js
 node_modules
 *.log
 
-.env
+.*
