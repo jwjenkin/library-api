@@ -17,7 +17,7 @@ module.exports = class DeezerService {
 
       this.accessToken = data.toString();
     });
-    
+
     this.appId = config.appId;
     this.apiUrl = config.apiUrl;
     this.authUrl = config.authUrl;
@@ -59,7 +59,6 @@ module.exports = class DeezerService {
     url += `${url.includes('?') ? '&' : '?'}access_token=${this.accessToken}`;
 
     http.get(url, (res) => {
-      console.log(res.statusCode);
       res.setEncoding('utf8');
       let data = '';
       let error = false;

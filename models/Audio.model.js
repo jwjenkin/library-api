@@ -9,12 +9,14 @@ let Audio = Schema({
   },
   fileId: {
     type: Schema.Types.ObjectId,
+    unique: true,
     required: true
   },
   artist: {
     type: {
       name: {
-        type: String
+        type: String,
+        index: true
       },
       picture: {
         type: String
@@ -24,7 +26,8 @@ let Audio = Schema({
   album: {
     type: {
       title: {
-        type: String
+        type: String,
+        index: true
       },
       cover: {
         type: String
@@ -40,15 +43,19 @@ let Audio = Schema({
   genre: {
     type: String
   },
+  realName: {
+    type: String,
+    index: true,
+    required: true
+  },
   title: {
     type: String,
+    index: true,
     required: true
   },
   titleShort: {
     type: String
   }
 });
-
-Audio.index({ title: 1, genre: 1, 'artist.name': 1, 'album.name': 1 });
 
 module.exports = model('Audio', Audio);
