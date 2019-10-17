@@ -40,7 +40,9 @@ router.get('/:type', (req, res) => {
     { $sort: { name: 1, ext: 1 } },
     { $skip: page * limit },
     { $limit: limit },
-    { $project: { fileType: 1, name: 1, ext: 1, tags: 1 } }
+    { $project: { fileType: 1, name: 1, ext: 1, tags: 1 } },
+    { $lookup: { as: 'audioInfo', from: 'audios', localField: '_id', foreignField: 'fileId' } },
+    { $unwind: { path: '$audioInfo', preserveNullAndEmptyArrays: true } }
   ]).then(files => res.json(files))
     .catch(err => (console.log(err), res.sendStatus(400)));
 });
@@ -121,13 +123,24 @@ function browseType (req) {
       };
     } // end if
 
-    File.aggregate([
+    const agg = [
       { $match },
       { $sort: { name: 1, ext: 1 } },
       { $skip: page * limit },
       { $limit: limit },
       { $project: { fileType: 1, name: 1, ext: 1, tags: 1 } }
-    ]).then(files => resolve(files))
+    ];
+
+    if ( req.params.type === 'audio' ) {
+      agg.push(
+        { $lookup: { as: 'audioInfo', from: 'audios', localField: '_id', foreignField: 'fileId' } },
+        { $unwind: { path: '$audioInfo', preserveNullAndEmptyArrays: true } }
+      );
+    } // end if
+
+    console.log(agg);
+
+    File.aggregate(agg).then(files => resolve(files))
       .catch(err => (console.log(err), reject(400)));
   });
 }
