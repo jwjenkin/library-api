@@ -14,11 +14,12 @@ router.get('/search', (req, res) => {
     const numResults = response.total;
 
     res.json({
-	    results: results.map(r => new Audio(Object.assign({ deezerId: r.id, titleShort: r.title_short }, r))),
+	    results: results.map(r =>
+        new Audio(Object.assign({ deezerId: r.id, titleShort: r.title_short }, r))
+      ),
       numResults
     });
   }, err => res.status(400).json({ err }));
 });
 
 module.exports = router;
-

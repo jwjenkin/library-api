@@ -13,9 +13,6 @@ let Audio = Schema({
   },
   artist: {
     type: {
-      deezerId: {
-        type: Number
-      },
       name: {
         type: String
       },
@@ -26,9 +23,6 @@ let Audio = Schema({
   },
   album: {
     type: {
-      deezerId: {
-        type: Number
-      },
       title: {
         type: String
       },
