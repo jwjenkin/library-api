@@ -80,7 +80,9 @@ router.get('/:type/tags/:tags', (req, res) => {
     { $sort: { name: 1, ext: 1 } },
     { $skip: page * limit },
     { $limit: limit },
-    { $project: { fileType: 1, name: 1, ext: 1, tags: 1 } }
+    { $project: { fileType: 1, name: 1, ext: 1, tags: 1 } },
+    { $lookup: { as: 'audioInfo', from: 'audios', localField: '_id', foreignField: 'fileId' } },
+    { $unwind: { path: '$audioInfo', preserveNullAndEmptyArrays: true } }
   ]).then(files => res.json(files))
     .catch(err => (console.log(err), res.sendStatus(400)));
 });
