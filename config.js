@@ -1,8 +1,9 @@
 module.exports = {
   deezer: {
     appId: 375244,
-    redirectUri: 'https://library.jwjenkin.com/deezer',
-    url: 'https://connect.deezer.com'
+    apiUrl: 'https://api.deezer.com',
+    authUrl: 'https://connect.deezer.com',
+    redirectUri: 'https://library.jwjenkin.com/deezer'
   },
   secret: 'y89awfegy8934tasdfl83rag*D)F'
 };

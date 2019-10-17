@@ -1,61 +1,79 @@
 'use strict'
 
 const http = require('https'),
-  { AsyncSubject } = require('rxjs'),
-  { map } = require('rxjs/operators'),
-  config = require('./config').deezer;
+  { AsyncSubject, of, throwError } = require('rxjs'),
+  { switchMap } = require('rxjs/operators'),
+  config = require('../config').deezer;
 
 module.exports = class DeezerService {
 
   constructor() {
     this.appId = config.appId;
+    this.apiUrl = config.apiUrl;
+    this.authUrl = config.authUrl;
     this.redirectUri = config.redirectUri;
     this.secret = process.env.DEEZER_SECRET || 'some-secret-key';
-    this.url = config.url;
   }
 
   authorise() {
-    return `${this.url}/oauth/auth.php?app_id=${this.appId}` +
+    return `${this.authUrl}/oauth/auth.php?app_id=${this.appId}` +
       `&redirect_uri=${this.redirectUri}&perms=offline_access,email`;
   }
 
   authenticate(code) {
     const params = `app_id=${this.appId}&secret=${this.secret}&code=${code}`;
-    return this.get(`${this.url}/oauth/access_token.php?${params}`).pipe(
-      map(response => {
+    return this.get(`${this.authUrl}/oauth/access_token.php?${params}`).pipe(
+      switchMap(response => {
+        if ( response === 'wrong code') {
+          return throwError({ message: response });
+        } // end if
+
         const authData = {};
         const data = response.split('&');
-        console.log(data);
-        for ( const d in data ) {
+        for ( const d of data ) {
           const keyValuePair = d.split('=');
-          console.log(keyValuePair);
-          authData[d[0]] = d[1];
+          authData[keyValuePair[0]] = keyValuePair[1];
         } // end for
-        return authData;
+        return of(authData);
       })
     );
   }
 
   search(term) {
-
+    return this.get(`${this.apiUrl}/search?q=${encodeURI(term)}`, { json: true });
   }
 
   get(url, options = {}) {
     const response = new AsyncSubject();
     http.get(url, options, (res) => {
+      console.log(res.statusCode);
+      res.setEncoding('utf8');
       let data = '';
+      let error = false;
 
-      res.on('data', d => process.stdout.write(d));
-      res.on('complete', () => {
-        response.next(data);
+      if ( res.statusCode >= 400 ) {
+        error = true;
+      } // end if
+
+      res.on('data', d => data += d);
+      res.on('end', () => {
+        if ( options.json ) {
+          try {
+            data = JSON.parse(data);
+          } catch ( e ) {
+            response.error(e);
+            response.complete();
+            return;
+          } // end try-catch
+        } // end if
+        error ?
+          response.error({ message: data }) :
+          response.next(data);
+
         response.complete();
       });
     }).on('error', err => {
-      const message = {
-        statusCode: err.statusCode,
-        statusMessage: err.statusMessage
-      };
-      response.error(message);
+      response.error(`Request Error: ${err}`);
       response.complete();
     });
     return response;
