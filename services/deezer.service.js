@@ -9,13 +9,15 @@ const http = require('https'),
 module.exports = class DeezerService {
 
   constructor() {
-    fs.readFiles('../.access_token', (err, data) => {
+    this.accessToken = 'blank';
+    fs.readFile('./.access_token', (err, data) => {
       if ( err ) {
         console.log(err);
       } // end if
 
-      this.access_token = data;
-    })
+      this.accessToken = data.toString();
+    });
+    
     this.appId = config.appId;
     this.apiUrl = config.apiUrl;
     this.authUrl = config.authUrl;
@@ -54,9 +56,9 @@ module.exports = class DeezerService {
   get(url, options = {}) {
     const response = new AsyncSubject();
     // inject access_token
-    url += `${url.contains('?') ? '&' : '?'}access_token=${access_token}`;
+    url += `${url.includes('?') ? '&' : '?'}access_token=${this.accessToken}`;
 
-    http.get(url, options, (res) => {
+    http.get(url, (res) => {
       console.log(res.statusCode);
       res.setEncoding('utf8');
       let data = '';
