@@ -4,15 +4,41 @@ const db = require('../services/db.service'),
   { model, Schema } = require('mongoose');
 
 let Audio = Schema({
+  deezerId: {
+    type: Number
+  },
   fileId: {
     type: Schema.Types.ObjectId,
     required: true
   },
   artist: {
-    type: String
+    type: {
+      deezerId: {
+        type: Number
+      },
+      name: {
+        type: String
+      },
+      picture: {
+        type: String
+      }
+    }
   },
   album: {
-    type: String
+    type: {
+      deezerId: {
+        type: Number
+      },
+      title: {
+        type: String
+      },
+      cover: {
+        type: String
+      },
+      tracklist: {
+        type: String
+      }
+    }
   },
   genre: {
     type: String
@@ -20,12 +46,9 @@ let Audio = Schema({
   title: {
     type: String,
     required: true
-  },
-  albumArt: {
-    type: String
   }
 });
 
-Audio.index({ name: 1, ext: 1 });
+Audio.index({ title: 1, genre: 1, 'artist.name': 1, 'album.name': 1 });
 
 module.exports = model('Audio', Audio);
