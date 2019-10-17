@@ -40,12 +40,18 @@ let Audio = Schema({
       }
     }
   },
+  duration: {
+    type: Number
+  },
   genre: {
     type: String
   },
   title: {
     type: String,
     required: true
+  },
+  titleShort: {
+    type: String
   }
 });
 

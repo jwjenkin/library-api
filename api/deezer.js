@@ -9,10 +9,15 @@ router.get('/search', (req, res) => {
     return res.status(400).json({ error: 'Please include query (q)' })
   } // end if
 
-  deezerSvc.search(req.query.q).subscribe(
-    response => res.json(response),
-    err => res.status(400).json({ err })
-  );
+  deezerSvc.search(req.query.q).subscribe(response => {
+    const results = response.data.slice();
+    const numResults = response.total;
+
+    res.json({
+	    results: results.map(r => new Audio(Object.assign({ deezerId: r.id, titleShort: r.title_short }, r))),
+      numResults
+    });
+  }, err => res.status(400).json({ err }));
 });
 
 module.exports = router;
