@@ -35,15 +35,20 @@ router.get('/:type', (req, res) => {
     page = 0;
   } // end if
 
-  File.aggregate([
+  const agg = [
     { $match },
     { $sort: { name: 1, ext: 1 } },
     { $skip: page * limit },
     { $limit: limit },
     { $project: { fileType: 1, name: 1, ext: 1, tags: 1 } },
-    { $lookup: { as: 'audioInfo', from: 'audios', localField: '_id', foreignField: 'fileId' } },
-    { $unwind: { path: '$audioInfo', preserveNullAndEmptyArrays: true } }
-  ]).then(files => res.json(files))
+    { $lookup: { as: 'audioInfo', from: 'audios', localField: '_id', foreignField: 'fileId' } }
+  ];
+
+  if ( req.params.type === 'audio' ) {
+    addAudioAggregate(agg);
+  } // end if
+
+  File.aggregate(agg).then(files => res.json(files))
     .catch(err => (console.log(err), res.sendStatus(400)));
 });
 
@@ -70,7 +75,7 @@ router.get('/:type/tags/:tags', (req, res) => {
     page = 0;
   } // end if
 
-  File.aggregate([
+  const agg = [
     {
       $match: {
         fileType: req.params.type,
@@ -82,10 +87,14 @@ router.get('/:type/tags/:tags', (req, res) => {
     { $sort: { name: 1, ext: 1 } },
     { $skip: page * limit },
     { $limit: limit },
-    { $project: { fileType: 1, name: 1, ext: 1, tags: 1 } },
-    { $lookup: { as: 'audioInfo', from: 'audios', localField: '_id', foreignField: 'fileId' } },
-    { $unwind: { path: '$audioInfo', preserveNullAndEmptyArrays: true } }
-  ]).then(files => res.json(files))
+    { $project: { fileType: 1, name: 1, ext: 1, tags: 1 } }
+  ];
+
+  if ( req.params.type === 'audio' ) {
+    addAudioAggregate(agg);
+  } // end if
+
+  File.aggregate(agg).then(files => res.json(files))
     .catch(err => (console.log(err), res.sendStatus(400)));
 });
 
@@ -132,17 +141,37 @@ function browseType (req) {
     ];
 
     if ( req.params.type === 'audio' ) {
-      agg.push(
-        { $lookup: { as: 'audioInfo', from: 'audios', localField: '_id', foreignField: 'fileId' } },
-        { $unwind: { path: '$audioInfo', preserveNullAndEmptyArrays: true } }
-      );
+      addAudioAggregate(agg);
     } // end if
-
-    console.log(agg);
 
     File.aggregate(agg).then(files => resolve(files))
       .catch(err => (console.log(err), reject(400)));
   });
+}
+
+function addAudioAggregate(agg) {
+  agg.push(
+    { $lookup: { as: 'audioInfo', from: 'audios', localField: '_id', foreignField: 'fileId' } },
+    { $unwind: { path: '$audioInfo', preserveNullAndEmptyArrays: true } },
+    {
+      $project: {
+        name: 1,
+        ext: 1,
+        tags: 1,
+        'audioInfo.title': 1,
+        'audioInfo.titleShort': 1,
+        'audioInfo.duration': 1,
+        'audioInfo.artist.id': 1,
+        'audioInfo.artist.name': 1,
+        'audioInfo.artist.link': 1,
+        'audioInfo.artist.picture_medium': 1,
+        'audioInfo.artist.id': 1,
+        'audioInfo.artist.title': 1,
+        'audioInfo.artist.tracklist': 1,
+        'audioInfo.artist.cover_medium': 1,
+      }
+    }
+  );
 }
 
 module.exports = router;
