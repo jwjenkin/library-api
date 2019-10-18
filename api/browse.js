@@ -165,10 +165,10 @@ function addAudioAggregate(agg) {
         'audioInfo.artist.name': 1,
         'audioInfo.artist.link': 1,
         'audioInfo.artist.picture_medium': 1,
-        'audioInfo.artist.id': 1,
-        'audioInfo.artist.title': 1,
-        'audioInfo.artist.tracklist': 1,
-        'audioInfo.artist.cover_medium': 1,
+        'audioInfo.album.id': 1,
+        'audioInfo.album.title': 1,
+        'audioInfo.album.tracklist': 1,
+        'audioInfo.album.cover_medium': 1,
       }
     }
   );
