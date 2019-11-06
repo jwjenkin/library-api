@@ -1,6 +1,11 @@
 # Library API
 Custom library api used to stream/download personal library collection.
 
+TODO:
+* Convert to Typescript for future readability
+* Use RxJS Observables instead of generic Promises
+* Improve stream handling
+
 ## Uses:
 * [ExpressJS](https://expressjs.com/)
 * [JWT Tokens](https://jwt.io/)
